@@ -7,7 +7,6 @@ import numpy as np
 from scipy.io import wavfile
 from scipy.sparse import coo_matrix
 from scipy.signal import spectrogram, convolve2d
-import json
 import sys
 
 
@@ -18,7 +17,8 @@ def main():
     print hpcp(sys.argv[1])
 
 
-def hpcp(file_name,
+def hpcp(y,
+         sr,
          win_size=4096,
          hop_size=1024,
          window='blackman',
@@ -88,7 +88,6 @@ def hpcp(file_name,
     """
 
     # spectrogram
-    y, sr = read_audio(file_name)
     Y, k, f, t = stft(y, sr, win_size=win_size, hop_size=hop_size, window=window, precision=precision)
 
     # prune spectrogram to [f_min, f_max]
@@ -119,7 +118,7 @@ def hpcp(file_name,
     if norm_frames:
         pcp = normalize_frames(pcp, final_thr)
 
-    return json.dumps({'chroma': pcp.tolist()}, indent=1) if output is 'json' else pcp
+    return pcp
 
 
 def read_audio(file_name):
